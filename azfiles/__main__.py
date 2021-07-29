@@ -1,0 +1,3 @@
+import azfiles
+
+azfiles.main()
