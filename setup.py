@@ -4,9 +4,7 @@ cmdclass_dict = {}  # type:ignore
 
 # MANIFEST.in ensures that readme and version included into sdist
 
-install_requires = [
-    "requests", "python-dateutil"
-]
+install_requires = ["requests", "python-dateutil"]
 
 dev_requires = [
     "hs-build-tools",
@@ -34,8 +32,7 @@ long_description = read_file("README.md")
 try:
     from hs_build_tools.release import get_version_and_add_release_cmd
 
-    version = get_version_and_add_release_cmd("version.txt",
-                                              cmdclass_dict)
+    version = get_version_and_add_release_cmd("version.txt", cmdclass_dict)
 except ModuleNotFoundError:
     version = read_file("version.txt").strip()
 
