@@ -1,18 +1,16 @@
-import traceback
-import sys
 import inspect
+import json
+import re
+import sys
+import traceback
+import typing
+import xml.etree.ElementTree as ET
 from datetime import datetime
 from pathlib import Path, PosixPath
-import xml.etree.ElementTree as ET
-import json
-from typing import Dict, List, Tuple, Type, Any, get_type_hints
-import re
-
-import typing
-from dateutil.parser import parse as dt_parse
-
+from typing import Any, Dict, List, Tuple, Type, get_type_hints
 
 import requests
+from dateutil.parser import parse as dt_parse
 
 CHUNK_SIZE = 64 * 1024
 
