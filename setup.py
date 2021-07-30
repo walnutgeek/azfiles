@@ -19,6 +19,8 @@ dev_requires = [
     "pytest",
     "pytest-mypy",
     "pytest-cov",
+    "types-python-dateutil",
+    "types-requests",
 ]
 
 
