@@ -1,3 +1,6 @@
+import traceback
+import sys
+import inspect
 from datetime import datetime
 from pathlib import Path, PosixPath
 import xml.etree.ElementTree as ET
@@ -125,6 +128,7 @@ def to_snake_case(name):
     """
     return re.sub("([a-z0-9])[-_]?([A-Z])", r"\1_\2", name).lower()
 
+
 def clean_header(s):
     """
     >>> hh = ['Content-Length', 'Content-Type', 'Last-Modified', 'ETag', 'Server', 'x-ms-request-id', 'x-ms-version', 'x-ms-type', 'x-ms-server-encrypted', 'x-ms-lease-status', 'x-ms-lease-state', 'x-ms-file-change-time', 'x-ms-file-last-write-time', 'x-ms-file-creation-time', 'x-ms-file-permission-key', 'x-ms-file-attributes', 'x-ms-file-id', 'x-ms-file-parent-id', 'Date']
@@ -132,8 +136,8 @@ def clean_header(s):
     ['content_length', 'content_type', 'last_modified', 'etag', 'server', 'x_ms_request_id', 'x_ms_version', 'x_ms_type', 'x_ms_server_encrypted', 'x_ms_lease_status', 'x_ms_lease_state', 'change_time', 'last_write_time', 'creation_time', 'permission_key', 'attributes', 'id', 'parent_id', 'date']
 
     """
-    return to_snake_case(
-        re.sub("-", "_", re.sub("x-ms-file-", "", s)))
+    return to_snake_case(re.sub("-", "_", re.sub("x-ms-file-", "", s)))
+
 
 class DirContent:
     def __init__(self, path: PosixPath):
@@ -393,13 +397,9 @@ class ApiCall:
         return DirEntry(
             path.name,
             ftype,
-            {
-                clean_header(k): v
-                for k, v in self.response.headers.items()
-            },
+            {clean_header(k): v for k, v in self.response.headers.items()},
             path=path,
         )
-
 
     def print_headers(self):
         print(f"status: {self.response.status_code}")
@@ -517,9 +517,6 @@ class Actions:
             self.remote.mount.delete()
 
 
-import sys
-
-
 def check_the_force(args) -> Tuple[List[str], bool]:
     """
     Check if user wants to force destructive operations without asking
@@ -530,9 +527,32 @@ def check_the_force(args) -> Tuple[List[str], bool]:
 
 
 def main(args=sys.argv[1:], api: Type[ApiCall] = ApiCall, config=_CONFIG):
+    show_help = False
     if len(args) == 0:
-        print(f"mounts: {list(config.data.keys())}")
+        print("azfiles - interact with Azure file shares\n")
+        print(f"Available mounts: \n   {list(config.data.keys())}")
+        show_help = True
     else:
-        args, ask = check_the_force(args)
-        cli = Actions(Remote(args[0], config, ask), api)
-        getattr(cli, args[1])(*args[2:])
+        try:
+            args, ask = check_the_force(args)
+            cli = Actions(Remote(args[0], config, ask), api)
+            getattr(cli, args[1])(*args[2:])
+        except:
+            traceback.print_exc()
+            show_help = True
+    if show_help:
+
+        print("\nUSAGES:")
+        actions = [f for f in dir(Actions) if not f.startswith("_")]
+        for a in actions:
+            fn = getattr(Actions, a)
+            names, _, _, defaults = inspect.getfullargspec(fn)[:4]
+            if defaults is None:
+                defaults = ()
+            def_offset = len(names) - len(defaults)
+            optonals = {k: v for k, v in zip(names[def_offset:], defaults)}
+            a_args = " ".join(
+                f"[{n}]" if n in optonals else f"<{n}>" for n in names[1:]
+            )
+            print(f" azfiles <remote_path> {a} {a_args}")
+        print()
