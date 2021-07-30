@@ -241,8 +241,11 @@ class ApiCall:
                    remote.url(),
                    headers = {
                         "x-ms-content-length" : str(size),
-                        "x-ms-type" : "file"
-        })
+                        "x-ms-type" : "file",
+                        "x-ms-file-permission": "inherit",
+                       "x-ms-file-attributes": "None",
+                       "x-ms-file-creation-time": "now",
+                       "x-ms-file-last-write-time": "now"})
         call.if_error(f"Can't clear_file:{remote!s} ")
 
 
@@ -307,7 +310,13 @@ class ApiCall:
         """
         https://docs.microsoft.com/en-us/rest/api/storageservices/create-directory
         """
-        call = cls('PUT', remote.mount.url(remote_dir, "restype=directory"))
+        dt = datetime.utcnow().isoformat()
+        call = cls('PUT',
+                   remote.mount.url(remote_dir, "restype=directory"),
+                   headers={"x-ms-file-permission":"inherit",
+                            "x-ms-file-attributes": "Directory",
+                            "x-ms-file-creation-time":"now",
+                            "x-ms-file-last-write-time":"now"})
         call.if_error(f"Can't create dir:{remote_dir!s} ")
 
     @classmethod
@@ -466,9 +475,9 @@ class Actions:
                 if self.remote.proceed(
                     f"Delete directory recursively!!!:{e.path}?"):
                     self._delete_dir_recursively(e.path)
-                else:
-                    if self.remote.proceed(f"Delete file:{e.path}?"):
-                        self.api.delete_file(self.remote, self.remote.remote_file)
+            else:
+                if self.remote.proceed(f"Delete file:{e.path}?"):
+                    self.api.delete_file(self.remote, self.remote.remote_file)
 
     def add_mount(self, storage_account, share, sas_token):
         mount = self.remote.mount
