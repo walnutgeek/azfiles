@@ -1,0 +1,82 @@
+trigger:
+  - master
+
+jobs:
+  - template: azure-pybuild.yml
+    parameters:
+      name: Windows
+      vmImage: 'vs2017-win2016'
+
+  - template: azure-pybuild.yml
+    parameters:
+      name: WinContainer
+      vmImage: 'windows-2019'
+
+  - template: azure-pybuild.yml
+    parameters:
+      name: macOS
+      vmImage: 'macOS-10.14'
+
+  - template: azure-pybuild.yml
+    parameters:
+      name: Linux
+      vmImage: 'ubuntu-16.04'
+
+
+  - job: Check
+    dependsOn:
+      - WinContainer
+      - Windows
+      - macOS
+      - Linux
+    pool:
+      vmImage: 'ubuntu-16.04'
+    steps:
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.6'
+          architecture: 'x64'
+      - script: |
+          pip install -e .[dev]
+          python setup.py release --azure
+        name: release
+  - job: pypitest
+    condition: eq( dependencies.Check.outputs['release.type'], 'minor')
+    dependsOn: Check
+    pool:
+      vmImage: 'ubuntu-16.04'
+    steps:
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.6'
+          architecture: 'x64'
+      - script: |
+          pip install -e .[dev]
+          python setup.py sdist bdist_wheel
+        name: dist
+      - task: TwineAuthenticate@0
+        inputs:
+          externalFeeds: pypitest
+      - script: twine upload -r pypitest --config-file $PYPIRC_PATH dist/*
+        name: twine
+  - job: pypi
+    condition: eq( dependencies.Check.outputs['release.type'], 'major')
+    dependsOn: Check
+    pool:
+      vmImage: 'ubuntu-16.04'
+    variables:
+      release_type: $[ dependencies.Check.outputs['release.type'] ]
+    steps:
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.6'
+          architecture: 'x64'
+      - script: |
+          pip install -e .[dev]
+          python setup.py sdist bdist_wheel
+        name: dist
+      - task: TwineAuthenticate@0
+        inputs:
+          externalFeeds: pypi
+      - script: twine upload -r pypi --config-file $PYPIRC_PATH dist/*
+        name: twine

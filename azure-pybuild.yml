@@ -1,0 +1,30 @@
+parameters:
+  name: ''
+  vmImage: ''
+
+jobs:
+  - job: ${{ parameters.name }}
+    pool:
+      vmImage: ${{ parameters.vmImage }}
+    strategy:
+      matrix:
+        Python36:
+          python.version: '3.6'
+        Python37:
+          python.version: '3.7'
+        Python38:
+          python.version: '3.8'
+      maxParallel: 2
+    steps:
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '$(python.version)'
+        name: set_py_ver
+      - script: |
+          python -V
+          pip install -e .[dev]
+        name: requirements
+      - script: python setup.py sdist
+        name: sdist
+      - script: python scent.py test current
+        name: test

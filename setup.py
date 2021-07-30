@@ -5,7 +5,7 @@ cmdclass_dict = {}  # type:ignore
 # MANIFEST.in ensures that readme and version included into sdist
 
 install_requires = [
-    "requests",
+    "requests", "python-dateutil"
 ]
 
 dev_requires = [

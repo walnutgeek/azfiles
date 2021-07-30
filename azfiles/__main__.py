@@ -1,3 +1,3 @@
-import azfiles
+from azfiles import main
 
-azfiles.main()
+main()
