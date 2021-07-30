@@ -331,11 +331,11 @@ class ApiCall:
         """
         https://docs.microsoft.com/en-us/rest/api/storageservices/get-file
         """
-        with cls("GET", remote.url(), stream=True).response as r:
-            r.raise_for_status()
-            with local_path.open("wb") as f:
-                for chunk in r.iter_content(chunk_size=CHUNK_SIZE):
-                    f.write(chunk)
+        r = cls("GET", remote.url(), stream=True).response
+        r.raise_for_status()
+        with local_path.open("wb") as f:
+            for chunk in r.iter_content(chunk_size=CHUNK_SIZE):
+                f.write(chunk)
 
     @classmethod
     def delete_directory(cls, remote: Remote, remote_dir: PosixPath):
