@@ -275,13 +275,6 @@ class ApiCall:
         return True
 
     @classmethod
-    def get_file_properties(cls, remote:Remote, remote_path:PosixPath) -> requests.Response :
-        """
-        https://docs.microsoft.com/en-us/rest/api/storageservices/get-file-properties
-        """
-        return cls('HEAD', remote.mount.url(remote_path)).response
-
-    @classmethod
     def get_dir_properties(cls, remote:Remote, remote_path:PosixPath) -> DirEntry:
         """
         https://docs.microsoft.com/en-us/rest/api/storageservices/get-directory-properties
