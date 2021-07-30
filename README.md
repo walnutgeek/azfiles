@@ -63,7 +63,6 @@ List remote directory content:
     $ azfiles mnt01:/ list
     mnt01:/
     name,type,size,creation_time,last_access_time,last_write_time,etag
-    abc,Directory,,2021-07-30T06:29:13+00:00,2021-07-30T06:29:13+00:00,2021-07-30T06:29:13+00:00,"0x8D9532359534095"
     backups,Directory,,2021-07-30T18:16:32+00:00,2021-07-30T18:16:32+00:00,2021-07-30T18:16:32+00:00,"0x8D9538628A3B80C"
     hello.txt,File,13,2021-07-30T18:26:54+00:00,2021-07-30T18:26:54+00:00,2021-07-30T18:26:54+00:00,"0x8D953879BD09E17"
     logs,Directory,,2021-07-30T18:13:20+00:00,2021-07-30T18:13:20+00:00,2021-07-30T18:13:20+00:00,"0x8D95385B635435D"
@@ -78,7 +77,30 @@ You and of course you can get your files back. You dont have to add slash
 to <local_path> if this directory already exists:
     
     $ azfiles mnt01:/backups/logs/20210730.log download .
+    $ azfiles mnt01:/hello.txt download h2.txt
+    $ ls
+    20210730.log	h2.txt		hello.txt
+    $
+    
+Careful - sharp edges. Delete is recursive. It will ask only one question. 
 
+    $ azfiles mnt01:/hello.txt delete
+    Delete file:/hello.txt?y
+    $ azfiles mnt01:/logs delete
+    Delete directory recursively!!!:/logs?y
+    $
+
+You can force `y` from command line too:
+
+    $ azfiles mnt01:/backups delete -y
+    $
+
+And we back where we started:
+    
+    $ azfiles mnt01:/ list
+    mnt01:/
+    name,type,size,creation_time,last_access_time,last_write_time,etag
+    $
     
     
 
