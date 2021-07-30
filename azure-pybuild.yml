@@ -26,5 +26,5 @@ jobs:
         name: requirements
       - script: python setup.py sdist
         name: sdist
-      - script: python scent.py test current
+      - script: pytest
         name: test
