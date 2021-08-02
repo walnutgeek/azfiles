@@ -3,15 +3,16 @@
 
 Allow you interact with Azure fileshares without installing az-cli. 
 
-Main intention to allow move files but keep it minimal. Project has 2 external 
-dependencies: requests and python-dateutil and  `pytest -cov` shows 323 
-lines of production code at this time.  
+Main intention to allow move files but keep it minimal. Project make use 
+of [Azure Files REST API](https://docs.microsoft.com/en-us/rest/api/storageservices/file-service-rest-api), 
+has 2 external dependencies (`requests`, `python-dateutil`) and 300+ 
+lines of production code acording to `pytest -cov` .  
 
-Get it:
+## Get it:
 
     pip install azfiles
 
-Get help:
+## Get help:
 
 ```
     $ azfiles 
@@ -31,7 +32,7 @@ Get help:
      
     $ 
 ```
-## How to
+## How to:
 
 Generate SAS token for particular share and register it with `azfiles` as mount `mnt01` :
 
@@ -95,7 +96,7 @@ You can force `y` from command line too:
     $ azfiles mnt01:/backups delete -y
     $
 
-And we back where we started:
+And we back where we're started:
     
     $ azfiles mnt01:/ list
     mnt01:/
