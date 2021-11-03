@@ -290,7 +290,9 @@ class ApiCall:
         return True
 
     @classmethod
-    def get_dir_properties(cls, remote: Remote, remote_path: PosixPath) -> typing.Union[DirEntry, None]:
+    def get_dir_properties(
+        cls, remote: Remote, remote_path: PosixPath
+    ) -> typing.Union[DirEntry, None]:
         """
         https://docs.microsoft.com/en-us/rest/api/storageservices/get-directory-properties
         """
@@ -300,7 +302,9 @@ class ApiCall:
         return None
 
     @classmethod
-    def get_file_properties(cls, remote: Remote, remote_path: PosixPath) -> typing.Union[DirEntry, None]:
+    def get_file_properties(
+        cls, remote: Remote, remote_path: PosixPath
+    ) -> typing.Union[DirEntry, None]:
         """
         https://docs.microsoft.com/en-us/rest/api/storageservices/get-file-properties
         """
@@ -434,8 +438,8 @@ def clean_sas_token(token: str) -> str:
     ''
     """
     if not token:
-        return ''
-    return token[1:] if token and token[0] == '?' else token
+        return ""
+    return token[1:] if token and token[0] == "?" else token
 
 
 class Actions:

@@ -103,6 +103,20 @@ And we back where we're started:
     name,type,size,creation_time,last_access_time,last_write_time,etag
     $
     
+## Developer commands
+
+Install all(including build/test) requirements:
+
+    pip install -e .[dev]
     
+Run tests with coverage:
+
+    pytest --cov
+
+Reformat all code. Runs `black` and `isort` on all sources:
+
+    python setup.py tidy
+    
+ 
 
     
