@@ -10,7 +10,7 @@ jobs:
   - template: azure-pybuild.yml
     parameters:
       name: WinContainer
-      vmImage: 'windows-2019'
+      vmImage: 'windows-latest'
 
   - template: azure-pybuild.yml
     parameters:
