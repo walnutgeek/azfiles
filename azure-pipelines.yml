@@ -5,11 +5,6 @@ jobs:
   - template: azure-pybuild.yml
     parameters:
       name: Windows
-      vmImage: 'vs2017-win2016'
-
-  - template: azure-pybuild.yml
-    parameters:
-      name: WinContainer
       vmImage: 'windows-latest'
 
   - template: azure-pybuild.yml
