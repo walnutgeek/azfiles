@@ -20,7 +20,7 @@ jobs:
   - template: azure-pybuild.yml
     parameters:
       name: Linux
-      vmImage: 'ubuntu-16.04'
+      vmImage: 'ubuntu-latest'
 
 
   - job: Check
@@ -30,7 +30,7 @@ jobs:
       - macOS
       - Linux
     pool:
-      vmImage: 'ubuntu-16.04'
+      vmImage: 'ubuntu-latest'
     steps:
       - task: UsePythonVersion@0
         inputs:
@@ -44,7 +44,7 @@ jobs:
     condition: eq( dependencies.Check.outputs['release.type'], 'minor')
     dependsOn: Check
     pool:
-      vmImage: 'ubuntu-16.04'
+      vmImage: 'ubuntu-latest'
     steps:
       - task: UsePythonVersion@0
         inputs:
@@ -63,7 +63,7 @@ jobs:
     condition: eq( dependencies.Check.outputs['release.type'], 'major')
     dependsOn: Check
     pool:
-      vmImage: 'ubuntu-16.04'
+      vmImage: 'ubuntu-latest'
     variables:
       release_type: $[ dependencies.Check.outputs['release.type'] ]
     steps:
