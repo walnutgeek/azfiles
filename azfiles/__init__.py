@@ -290,7 +290,7 @@ class ApiCall:
         return True
 
     @classmethod
-    def get_dir_properties(cls, remote: Remote, remote_path: PosixPath) -> DirEntry:
+    def get_dir_properties(cls, remote: Remote, remote_path: PosixPath) -> typing.Union[DirEntry, None]:
         """
         https://docs.microsoft.com/en-us/rest/api/storageservices/get-directory-properties
         """
@@ -300,7 +300,7 @@ class ApiCall:
         return None
 
     @classmethod
-    def get_file_properties(cls, remote: Remote, remote_path: PosixPath) -> DirEntry:
+    def get_file_properties(cls, remote: Remote, remote_path: PosixPath) -> typing.Union[DirEntry, None]:
         """
         https://docs.microsoft.com/en-us/rest/api/storageservices/get-file-properties
         """
@@ -424,6 +424,20 @@ def split_buffer(sz: int, max: int) -> List[Tuple[int, int]]:
     return list(zip(starts, ends))
 
 
+def clean_sas_token(token: str) -> str:
+    """
+    >>> clean_sas_token("abc")
+    'abc'
+    >>> clean_sas_token("?abc")
+    'abc'
+    >>> clean_sas_token("")
+    ''
+    """
+    if not token:
+        return ''
+    return token[1:] if token and token[0] == '?' else token
+
+
 class Actions:
     def __init__(self, remote: Remote, api: Type[ApiCall]):
         self.remote = remote
@@ -472,7 +486,9 @@ class Actions:
         order = [self.api.get_file_properties, self.api.get_dir_properties]
         if self.remote.is_dir:
             order.reverse()
+        e = None
         for c in order:
+            # noinspection PyArgumentList
             e = c(self.remote, self.remote.remote_file)
             if e:
                 break
@@ -507,7 +523,7 @@ class Actions:
                 return
         mount.storage_account = storage_account
         mount.share = share
-        mount.sas_token = sas_token
+        mount.sas_token = clean_sas_token(sas_token)
         mount.save()
 
     def delete_mount(self):
@@ -524,6 +540,7 @@ def check_the_force(args) -> Tuple[List[str], bool]:
     return [v for v in args if not_y(v)], ask
 
 
+# noinspection PyDefaultArgument
 def main(args=sys.argv[1:], api: Type[ApiCall] = ApiCall, config=_CONFIG):
     show_help = False
     if len(args) == 0:
